@@ -50,7 +50,6 @@
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
   #include <stdint.h>
   extern uint32_t SystemCoreClock;
-  void xPortSysTickHandler(void);
 #endif
 #define configUSE_PREEMPTION                     1
 #define configSUPPORT_STATIC_ALLOCATION          1
@@ -130,18 +129,29 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );} 
+extern void handle_assert_failed();
+#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); handle_assert_failed(); }
 /* USER CODE END 1 */
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
 standard names. */
-#define vPortSVCHandler    SVC_Handler
-#define xPortPendSVHandler PendSV_Handler
+//there's a disconnect between the CMSIS standard names and those cortex-m-rt uses:
+// SVC_Handler --> SVCall
+// PendSV_Handler -> PendSV
+// SysTick_Handler -> SysTick
+
+
+//#define vPortSVCHandler    SVC_Handler
+#define vPortSVCHandler    SVCall
+
+//#define xPortPendSVHandler PendSV_Handler
+#define xPortPendSVHandler PendSV
 
 /* IMPORTANT: This define is commented when used with STM32Cube firmware, when the timebase source is SysTick,
               to prevent overwriting SysTick_Handler defined within STM32Cube HAL */
- 
-/* #define xPortSysTickHandler SysTick_Handler */
+
+//#define xPortSysTickHandler SysTick_Handler
+#define xPortSysTickHandler SysTick
 
 /* USER CODE BEGIN Defines */   	      
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
