@@ -14,7 +14,7 @@
 # target
 ######################################
 TARGET = cmsis_freertos_stm32f3
-LIB_OUTFILE = libcmsis_rtos2_stm32f3.a
+LIB_OUTFILE = libcmsis_rtos2.a
 
 
 ######################################
